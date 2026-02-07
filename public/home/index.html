@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radioactive Proxy</title>
+</head>
+<body>
+    <div id="splash">
+        <div class="splash-content">
+            <h1>radioactive</h1>
+            <p class="typing"><span id="typewriter"></span></p>
+        </div>
+        <p class="bottom-text">press space to jump in</p>
+    </div>
+
+    <div id="app">
+        <nav class="navbar">
+            <div class="nav-brand">🚀 RADIOACTIVE</div>
+            <div class="nav-links">
+                <button class="nav-btn active" onclick="switchTab('browser')">🌐 Browser</button>
+                <button class="nav-btn" onclick="switchTab('games')">🎮 Games</button>
+                <button class="nav-btn" onclick="switchTab('movies')">🎬 Movies</button>
+                <button class="nav-btn" onclick="switchTab('music')">🎵 Music</button>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="tab-content active" id="browser">
+                <h2>🌐 WEB BROWSER</h2>
+                <div class="browser-controls">
+                    <input type="text" id="urlInput" placeholder="Enter website URL (e.g., google.com, youtube.com)" />
+                    <button onclick="loadWebsite()" class="go-btn">GO</button>
+                    <button onclick="goBack()" class="nav-control">◀</button>
+                    <button onclick="goForward()" class="nav-control">▶</button>
+                    <button onclick="refreshPage()" class="nav-control">↻</button>
+                </div>
+                <div class="quick-links">
+                    <button onclick="quickLoad('google.com')">Google</button>
+                    <button onclick="quickLoad('youtube.com')">YouTube</button>
+                    <button onclick="quickLoad('wikipedia.org')">Wikipedia</button>
+                    <button onclick="quickLoad('reddit.com')">Reddit</button>
+                    <button onclick="quickLoad('twitter.com')">Twitter</button>
+                    <button onclick="quickLoad('github.com')">GitHub</button>
+                </div>
+                <iframe id="proxyFrame"></iframe>
+            </div>
+
+            <div class="tab-content" id="games">
+                <h2>🎮 GAME LIBRARY</h2>
+                <div class="games-grid">
+                    <div class="game-card" onclick="loadGame('snake')">
+                        <div class="game-icon">🐍</div>
+                        <h3>Snake</h3>
+                        <p>Classic snake game - eat and grow!</p>
+                    </div>
+                    <div class="game-card" onclick="loadGame('pong')">
+                        <div class="game-icon">🏓</div>
+                        <h3>Pong</h3>
+                        <p>Retro paddle game - don't miss!</p>
+                    </div>
+                    <div class="game-card" onclick="loadGame('breakout')">
+                        <div class="game-icon">🧱</div>
+                        <h3>Breakout</h3>
+                        <p>Break all the bricks!</p>
+                    </div>
+                    <div class="game-card" onclick="loadGame('spaceshooter')">
+                        <div class="game-icon">🚀</div>
+                        <h3>Space Shooter</h3>
+                        <p>Defend against aliens!</p>
+                    </div>
+                </div>
+                <div id="gameContainer"></div>
+            </div>
+
+            <div class="tab-content" id="movies">
+                <h2>🎬 MOVIE PLAYER</h2>
+                <div class="video-player">
+                    <video id="moviePlayer" controls>
+                        <source src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="upload-section">
+                        <input type="file" id="videoUpload" accept="video/*" onchange="loadVideo(event)">
+                        <label for="videoUpload" class="upload-btn">📁 Upload Video</label>
+                        <p class="or-text">or paste video URL:</p>
+                        <input type="text" id="videoUrl" placeholder="Enter video URL">
+                        <button onclick="loadVideoUrl()" class="load-btn">Load Video</button>
+                    </div>
+                </div>
+                <div class="movie-suggestions">
+                    <h3>Sample Videos</h3>
+                    <button onclick="loadSampleVideo('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')">Big Buck Bunny</button>
+                    <button onclick="loadSampleVideo('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4')">Elephants Dream</button>
+                    <button onclick="loadSampleVideo('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')">For Bigger Blazes</button>
+                </div>
+            </div>
+
+            <div class="tab-content" id="music">
+                <h2>🎵 MUSIC PLAYER</h2>
+                <div class="music-player">
+                    <audio id="audioPlayer" controls>
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="music-controls">
+                        <input type="file" id="audioUpload" accept="audio/*" onchange="loadAudio(event)">
+                        <label for="audioUpload" class="upload-btn">📁 Upload Music</label>
+                        <p class="or-text">or paste audio URL:</p>
+                        <input type="text" id="audioUrl" placeholder="Enter audio URL (MP3, WAV, OGG)">
+                        <button onclick="loadAudioUrl()" class="load-btn">Load Audio</button>
+                    </div>
+                    <div class="playlist">
+                        <h3>🎧 Playlist</h3>
+                        <div class="playlist-items" id="playlistItems">
+                            <div class="playlist-item" onclick="loadSampleAudio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', this)">
+                                🎵 Sample Track 1
+                            </div>
+                            <div class="playlist-item" onclick="loadSampleAudio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', this)">
+                                🎵 Sample Track 2
+                            </div>
+                            <div class="playlist-item" onclick="loadSampleAudio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', this)">
+                                🎵 Sample Track 3
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const phrases = [
+            "the home of the games",
+            "where legends are made",
+            "play without limits",
+            "browse unrestricted",
+            "entertainment unleashed"
+        ];
+        
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typewriterElement = document.getElementById('typewriter');
+        const typingSpeed = 100;
+        const deletingSpeed = 50;
+        const pauseTime = 2000;
+        
+        function type() {
+            const currentPhrase = phrases[phraseIndex];
+            
+            if (isDeleting) {
+                typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                setTimeout(() => {
+                    isDeleting = true;
+                    type();
+                }, pauseTime);
+                return;
+            }
+            
+            if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                setTimeout(type, 500);
+                return;
+            }
+            
+            setTimeout(type, isDeleting ? deletingSpeed : typingSpeed);
+        }
+        
+        setTimeout(type, 1000);
+
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space' && document.getElementById('splash').style.opacity !== '0') {
+                enterApp();
+            }
+        });
+
+        document.getElementById('splash').addEventListener('click', enterApp);
+
+        function enterApp() {
+            document.getElementById('splash').classList.add('hidden');
+            document.getElementById('app').classList.add('visible');
+            document.body.style.overflow = 'auto';
+        }
+
+
+        function switchTab(tabName) {
+
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+
+            document.getElementById(tabName).classList.add('active');
+            
+
+            event.target.classList.add('active');
+        }
+
+
+        function loadWebsite() {
+            let url = document.getElementById('urlInput').value.trim();
+            if (!url) return;
+            
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            
+            document.getElementById('proxyFrame').src = url;
+        }
+
+        function quickLoad(url) {
+            document.getElementById('urlInput').value = url;
+            loadWebsite();
+        }
+
+        function goBack() {
+            const frame = document.getElementById('proxyFrame');
+            frame.contentWindow.history.back();
+        }
+
+        function goForward() {
+            const frame = document.getElementById('proxyFrame');
+            frame.contentWindow.history.forward();
+        }
+
+        function refreshPage() {
+            const frame = document.getElementById('proxyFrame');
+            frame.src = frame.src;
+        }
+
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loadWebsite();
+            }
+        });
+
+        function loadVideo(event) {
+            const file = event.target.files[0];
+            const player = document.getElementById('moviePlayer');
+            player.src = URL.createObjectURL(file);
+            player.play();
+        }
+
+        function loadVideoUrl() {
+            const url = document.getElementById('videoUrl').value.trim();
+            if (!url) return;
+            
+            const player = document.getElementById('moviePlayer');
+            player.src = url;
+            player.play();
+        }
+
+        function loadSampleVideo(url) {
+            const player = document.getElementById('moviePlayer');
+            player.src = url;
+            player.play();
+        }
+
+        function loadAudio(event) {
+            const file = event.target.files[0];
+            const player = document.getElementById('audioPlayer');
+            player.src = URL.createObjectURL(file);
+            player.play();
+        }
+
+        function loadAudioUrl() {
+            const url = document.getElementById('audioUrl').value.trim();
+            if (!url) return;
+            
+            const player = document.getElementById('audioPlayer');
+            player.src = url;
+            player.play();
+        }
+
+        function loadSampleAudio(url, element) {
+            const player = document.getElementById('audioPlayer');
+            player.src = url;
+            player.play();
+            
+            document.querySelectorAll('.playlist-item').forEach(item => {
+                item.classList.remove('playing');
+            });
+            element.classList.add('playing');
+        }
+
+        let currentGame = null;
+
+        function loadGame(gameName) {
+            const container = document.getElementById('gameContainer');
+            container.innerHTML = '';
+            
+            if (currentGame) {
+                currentGame = null;
+            }
+            
+            switch(gameName) {
+                case 'snake':
+                    loadSnakeGame();
+                    break;
+                case 'pong':
+                    loadPongGame();
+                    break;
+                case 'breakout':
+                    loadBreakoutGame();
+                    break;
+                case 'spaceshooter':
+                    loadSpaceShooter();
+                    break;
+            }
+        }
+
+        function loadSnakeGame() {
+            const container = document.getElementById('gameContainer');
+            container.innerHTML = `
+                <canvas id="gameCanvas" width="400" height="400"></canvas>
+                <div class="game-info">Score: <span id="score">0</span></div>
+                <div class="game-controls">
+                    <button onclick="loadGame('snake')">Restart</button>
+                </div>
+            `;
+            
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const box = 20;
+            let snake = [{x: 10 * box, y: 10 * box}];
+            let direction = 'RIGHT';
+            let food = {
+                x: Math.floor(Math.random() * 19 + 1) * box,
+                y: Math.floor(Math.random() * 19 + 1) * box
+            };
+            let score = 0;
+
+            document.addEventListener('keydown', changeDirection);
+
+            function changeDirection(event) {
+                if (event.keyCode === 37 && direction !== 'RIGHT') direction = 'LEFT';
+                else if (event.keyCode === 38 && direction !== 'DOWN') direction = 'UP';
+                else if (event.keyCode === 39 && direction !== 'LEFT') direction = 'RIGHT';
+                else if (event.keyCode === 40 && direction !== 'UP') direction = 'DOWN';
+            }
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                for (let i = 0; i < snake.length; i++) {
+                    ctx.fillStyle = i === 0 ? '#00FF88' : 'rgba(0, 255, 136, 0.7)';
+                    ctx.fillRect(snake[i].x, snake[i].y, box, box);
+                    ctx.strokeStyle = '#8B00FF';
+                    ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+                }
+
+                ctx.fillStyle = '#8B00FF';
+                ctx.fillRect(food.x, food.y, box, box);
+
+                let snakeX = snake[0].x;
+                let snakeY = snake[0].y;
+
+                if (direction === 'LEFT') snakeX -= box;
+                if (direction === 'UP') snakeY -= box;
+                if (direction === 'RIGHT') snakeX += box;
+                if (direction === 'DOWN') snakeY += box;
+
+                if (snakeX === food.x && snakeY === food.y) {
+                    score++;
+                    document.getElementById('score').textContent = score;
+                    food = {
+                        x: Math.floor(Math.random() * 19 + 1) * box,
+                        y: Math.floor(Math.random() * 19 + 1) * box
+                    };
+                } else {
+                    snake.pop();
+                }
+
+                let newHead = {x: snakeX, y: snakeY};
+
+                if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height || collision(newHead, snake)) {
+                    clearInterval(currentGame);
+                    alert('Game Over! Score: ' + score);
+                    return;
+                }
+
+                snake.unshift(newHead);
+            }
+
+            function collision(head, array) {
+                for (let i = 0; i < array.length; i++) {
+                    if (head.x === array[i].x && head.y === array[i].y) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            currentGame = setInterval(draw, 100);
+        }
+
+        function loadPongGame() {
+            const container = document.getElementById('gameContainer');
+            container.innerHTML = `
+                <canvas id="gameCanvas" width="600" height="400"></canvas>
+                <div class="game-info">Player: <span id="playerScore">0</span> | Computer: <span id="computerScore">0</span></div>
+                <div class="game-controls">
+                    <button onclick="loadGame('pong')">Restart</button>
+                </div>
+            `;
+            
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            const paddle = {
+                width: 10,
+                height: 80,
+                player: { x: 10, y: canvas.height / 2 - 40, score: 0 },
+                computer: { x: canvas.width - 20, y: canvas.height / 2 - 40, score: 0 }
+            };
+
+            const ball = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                radius: 8,
+                velocityX: 5,
+                velocityY: 5,
+                speed: 5
+            };
+
+            canvas.addEventListener('mousemove', function(e) {
+                let rect = canvas.getBoundingClientRect();
+                paddle.player.y = e.clientY - rect.top - paddle.height / 2;
+            });
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#00FF88';
+                ctx.fillRect(paddle.player.x, paddle.player.y, paddle.width, paddle.height);
+                ctx.fillRect(paddle.computer.x, paddle.computer.y, paddle.width, paddle.height);
+
+                ctx.fillStyle = '#8B00FF';
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.setLineDash([5, 15]);
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, 0);
+                ctx.lineTo(canvas.width / 2, canvas.height);
+                ctx.stroke();
+            }
+
+            function update() {
+                ball.x += ball.velocityX;
+                ball.y += ball.velocityY;
+
+                paddle.computer.y += ((ball.y - (paddle.computer.y + paddle.height / 2))) * 0.1;
+
+                if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+                    ball.velocityY = -ball.velocityY;
+                }
+
+                let player = (ball.x < canvas.width / 2) ? paddle.player : paddle.computer;
+                if (collision(ball, player)) {
+                    let collidePoint = ball.y - (player.y + paddle.height / 2);
+                    collidePoint = collidePoint / (paddle.height / 2);
+                    let angleRad = collidePoint * Math.PI / 4;
+                    let direction = (ball.x < canvas.width / 2) ? 1 : -1;
+                    ball.velocityX = direction * ball.speed * Math.cos(angleRad);
+                    ball.velocityY = ball.speed * Math.sin(angleRad);
+                    ball.speed += 0.1;
+                }
+
+                if (ball.x - ball.radius < 0) {
+                    paddle.computer.score++;
+                    document.getElementById('computerScore').textContent = paddle.computer.score;
+                    resetBall();
+                } else if (ball.x + ball.radius > canvas.width) {
+                    paddle.player.score++;
+                    document.getElementById('playerScore').textContent = paddle.player.score;
+                    resetBall();
+                }
+            }
+
+            function collision(b, p) {
+                b.top = b.y - b.radius;
+                b.bottom = b.y + b.radius;
+                b.left = b.x - b.radius;
+                b.right = b.x + b.radius;
+
+                p.top = p.y;
+                p.bottom = p.y + paddle.height;
+                p.left = p.x;
+                p.right = p.x + paddle.width;
+
+                return b.right > p.left && b.bottom > p.top && b.left < p.right && b.top < p.bottom;
+            }
+
+            function resetBall() {
+                ball.x = canvas.width / 2;
+                ball.y = canvas.height / 2;
+                ball.speed = 5;
+                ball.velocityX = -ball.velocityX;
+            }
+
+            function gameLoop() {
+                draw();
+                update();
+            }
+
+            currentGame = setInterval(gameLoop, 1000 / 60);
+        }
+
+        function loadBreakoutGame() {
+            const container = document.getElementById('gameContainer');
+            container.innerHTML = `
+                <canvas id="gameCanvas" width="600" height="400"></canvas>
+                <div class="game-info">Score: <span id="score">0</span> | Lives: <span id="lives">3</span></div>
+                <div class="game-controls">
+                    <button onclick="loadGame('breakout')">Restart</button>
+                </div>
+            `;
+            
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const paddle = {
+                width: 100,
+                height: 10,
+                x: canvas.width / 2 - 50,
+                y: canvas.height - 30,
+                speed: 8,
+                dx: 0
+            };
+
+            const ball = {
+                x: canvas.width / 2,
+                y: paddle.y - 10,
+                radius: 8,
+                dx: 4 * (Math.random() > 0.5 ? 1 : -1),
+                dy: -4
+            };
+
+            const brick = {
+                rows: 5,
+                cols: 10,
+                width: 55,
+                height: 20,
+                padding: 5,
+                offsetX: 15,
+                offsetY: 40,
+                visible: []
+            };
+
+            let score = 0;
+            let lives = 3;
+
+            for (let r = 0; r < brick.rows; r++) {
+                brick.visible[r] = [];
+                for (let c = 0; c < brick.cols; c++) {
+                    brick.visible[r][c] = true;
+                }
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                let rect = canvas.getBoundingClientRect();
+                let mouseX = e.clientX - rect.left;
+                paddle.x = mouseX - paddle.width / 2;
+                if (paddle.x < 0) paddle.x = 0;
+                if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
+            });
+
+            function drawPaddle() {
+                ctx.fillStyle = '#00FF88';
+                ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+            }
+
+            function drawBall() {
+                ctx.fillStyle = '#8B00FF';
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            function drawBricks() {
+                for (let r = 0; r < brick.rows; r++) {
+                    for (let c = 0; c < brick.cols; c++) {
+                        if (brick.visible[r][c]) {
+                            const brickX = c * (brick.width + brick.padding) + brick.offsetX;
+                            const brickY = r * (brick.height + brick.padding) + brick.offsetY;
+                            
+                            const colors = ['#FF0088', '#8B00FF', '#00FF88', '#00FFFF', '#FFD700'];
+                            ctx.fillStyle = colors[r % colors.length];
+                            ctx.fillRect(brickX, brickY, brick.width, brick.height);
+                            
+                            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                            ctx.strokeRect(brickX, brickY, brick.width, brick.height);
+                        }
+                    }
+                }
+            }
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                drawBricks();
+                drawPaddle();
+                drawBall();
+            }
+
+            function update() {
+                ball.x += ball.dx;
+                ball.y += ball.dy;
+
+                if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+                    ball.dx = -ball.dx;
+                }
+                if (ball.y - ball.radius < 0) {
+                    ball.dy = -ball.dy;
+                }
+
+                if (ball.y + ball.radius > paddle.y && 
+                    ball.x > paddle.x && 
+                    ball.x < paddle.x + paddle.width) {
+                    ball.dy = -ball.dy;
+                    ball.y = paddle.y - ball.radius;
+                }
+
+                for (let r = 0; r < brick.rows; r++) {
+                    for (let c = 0; c < brick.cols; c++) {
+                        if (brick.visible[r][c]) {
+                            const brickX = c * (brick.width + brick.padding) + brick.offsetX;
+                            const brickY = r * (brick.height + brick.padding) + brick.offsetY;
+                            
+                            if (ball.x > brickX && 
+                                ball.x < brickX + brick.width && 
+                                ball.y > brickY && 
+                                ball.y < brickY + brick.height) {
+                                ball.dy = -ball.dy;
+                                brick.visible[r][c] = false;
+                                score += 10;
+                                document.getElementById('score').textContent = score;
+                            }
+                        }
+                    }
+                }
+
+                if (ball.y + ball.radius > canvas.height) {
+                    lives--;
+                    document.getElementById('lives').textContent = lives;
+                    if (lives === 0) {
+                        clearInterval(currentGame);
+                        alert('Game Over! Final Score: ' + score);
+                        return;
+                    }
+                    ball.x = canvas.width / 2;
+                    ball.y = paddle.y - 10;
+                    ball.dx = 4 * (Math.random() > 0.5 ? 1 : -1);
+                    ball.dy = -4;
+                }
+
+                let allBricksGone = true;
+                for (let r = 0; r < brick.rows; r++) {
+                    for (let c = 0; c < brick.cols; c++) {
+                        if (brick.visible[r][c]) {
+                            allBricksGone = false;
+                            break;
+                        }
+                    }
+                    if (!allBricksGone) break;
+                }
+                
+                if (allBricksGone) {
+                    clearInterval(currentGame);
+                    alert('You Win! Final Score: ' + score);
+                }
+            }
+
+            function gameLoop() {
+                draw();
+                update();
+            }
+
+            currentGame = setInterval(gameLoop, 1000 / 60);
+        }
+
+        function loadSpaceShooter() {
+            const container = document.getElementById('gameContainer');
+            container.innerHTML = `
+                <canvas id="gameCanvas" width="600" height="500"></canvas>
+                <div class="game-info">Score: <span id="score">0</span> | Lives: <span id="lives">3</span></div>
+                <div class="game-controls">
+                    <button onclick="loadGame('spaceshooter')">Restart</button>
+                    <p style="color: rgba(255,255,255,0.7); margin-top: 0.5rem;">Use mouse to move, click to shoot</p>
+                </div>
+            `;
+            
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const player = {
+                x: canvas.width / 2,
+                y: canvas.height - 60,
+                width: 40,
+                height: 40,
+                speed: 5
+            };
+
+            let bullets = [];
+            let enemies = [];
+            let score = 0;
+            let lives = 3;
+            let enemySpawnRate = 100;
+            let frameCount = 0;
+
+            canvas.addEventListener('mousemove', function(e) {
+                let rect = canvas.getBoundingClientRect();
+                player.x = e.clientX - rect.left - player.width / 2;
+            });
+
+            canvas.addEventListener('click', function() {
+                bullets.push({
+                    x: player.x + player.width / 2 - 2,
+                    y: player.y,
+                    width: 4,
+                    height: 15,
+                    speed: 7
+                });
+            });
+
+            function drawPlayer() {
+                ctx.fillStyle = '#00FF88';
+                ctx.beginPath();
+                ctx.moveTo(player.x + player.width / 2, player.y);
+                ctx.lineTo(player.x, player.y + player.height);
+                ctx.lineTo(player.x + player.width, player.y + player.height);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            function drawBullets() {
+                ctx.fillStyle = '#FFD700';
+                bullets.forEach(bullet => {
+                    ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                });
+            }
+
+            function drawEnemies() {
+                ctx.fillStyle = '#8B00FF';
+                enemies.forEach(enemy => {
+                    ctx.beginPath();
+                    ctx.moveTo(enemy.x + enemy.width / 2, enemy.y + enemy.height);
+                    ctx.lineTo(enemy.x, enemy.y);
+                    ctx.lineTo(enemy.x + enemy.width, enemy.y);
+                    ctx.closePath();
+                    ctx.fill();
+                });
+            }
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                for (let i = 0; i < 50; i++) {
+                    const x = Math.random() * canvas.width;
+                    const y = (Math.random() * canvas.height + frameCount) % canvas.height;
+                    ctx.fillRect(x, y, 2, 2);
+                }
+                
+                drawPlayer();
+                drawBullets();
+                drawEnemies();
+            }
+
+            function update() {
+                frameCount++;
+
+                bullets = bullets.filter(bullet => {
+                    bullet.y -= bullet.speed;
+                    return bullet.y > 0;
+                });
+
+                if (frameCount % enemySpawnRate === 0) {
+                    enemies.push({
+                        x: Math.random() * (canvas.width - 30),
+                        y: -30,
+                        width: 30,
+                        height: 30,
+                        speed: 2 + Math.random() * 2
+                    });
+                }
+
+                enemies = enemies.filter(enemy => {
+                    enemy.y += enemy.speed;
+
+                    if (enemy.y + enemy.height > player.y &&
+                        enemy.x < player.x + player.width &&
+                        enemy.x + enemy.width > player.x) {
+                        lives--;
+                        document.getElementById('lives').textContent = lives;
+                        if (lives === 0) {
+                            clearInterval(currentGame);
+                            alert('Game Over! Final Score: ' + score);
+                        }
+                        return false;
+                    }
+                    
+                    return enemy.y < canvas.height;
+                });
+
+                bullets = bullets.filter(bullet => {
+                    let hit = false;
+                    enemies = enemies.filter(enemy => {
+                        if (bullet.x < enemy.x + enemy.width &&
+                            bullet.x + bullet.width > enemy.x &&
+                            bullet.y < enemy.y + enemy.height &&
+                            bullet.y + bullet.height > enemy.y) {
+                            score += 10;
+                            document.getElementById('score').textContent = score;
+                            hit = true;
+                            return false;
+                        }
+                        return true;
+                    });
+                    return !hit;
+                });
+            }
+
+            function gameLoop() {
+                draw();
+                update();
+            }
+
+            currentGame = setInterval(gameLoop, 1000 / 60);
+        }
+    </script>
+</body>
+</html>
